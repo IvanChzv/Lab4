@@ -25,6 +25,7 @@ def save_thresholds():
 
 @app.route("/data")
 def get_data():
+
     conn = sqlite3.connect("server_data.db")
     cursor = conn.cursor()
     
@@ -55,7 +56,9 @@ def get_data():
         cpu_load = float(entry[2])
         memory_usage = float(entry[3])
         formatted_data.append((timestamp, cpu_temperature, cpu_load, memory_usage))
+
     
+
     return jsonify({'data': formatted_data})
 def get_cpu_temperature():
     output = subprocess.check_output(['sensors'])
@@ -84,6 +87,7 @@ def save_server_stats():
     conn.commit()
     conn.close()
 def send_email(subject, message):
+    print("Письмо отправлено")
     # Замените значения настройками вашей электронной почты
     sender_email = "vanya.chazov@internet.ru"
     sender_password = "Tjy5mH9sJDmgg2npf16U"
@@ -96,15 +100,17 @@ def send_email(subject, message):
         server.starttls()
         server.login(sender_email, sender_password)
         server.sendmail(sender_email, receiver_email, msg.as_string())
-    print("Отправлено письмо")
-def check_thresholds(cpu_load, cpu_temperature, memory_usage):
+
+def check_thresholds(cpu_critical, temperature_critical, memory_critical):
+    cpu_load, cpu_temperature, memory_usage = get_server_stats()
     # Здесь можно задать критические значения и отправлять уведомления при их превышении
-    if cpu_load > 90:
+    if cpu_load > cpu_critical:
         send_email("CPU Load Alert", f"CPU load is high: {cpu_load}%")
-    if cpu_temperature > 80:
+    if cpu_temperature > temperature_critical:
         send_email("CPU Temperature Alert", f"CPU temperature is high: {cpu_temperature}°C")
-    if memory_usage > 90:
+    if memory_usage > memory_critical:
         send_email("Memory Usage Alert", f"Memory usage is high: {memory_usage}%")
+
 @app.before_request
 def setup():
     global temperature_critical, cpu_critical, memory_critical
@@ -122,7 +128,10 @@ def setup():
     conn.close()
     save_server_stats()  # Сохранение данных перед каждым запросом
     # Получение актуальных значений из формы
+    print("аааа")
     check_thresholds(cpu_critical, temperature_critical, memory_critical)
 
 if __name__ == "__main__":
+    print("Запускаем")
     app.run(host='0.0.0.0', port=8080)
+    
