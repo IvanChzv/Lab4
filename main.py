@@ -87,7 +87,7 @@ def save_server_stats():
     conn.commit()
     conn.close()
 def send_email(subject, message):
-    print("Письмо отправлено")
+    print("Отправлно письмо на почту")
     # Замените значения настройками вашей электронной почты
     sender_email = "vanya.chazov@internet.ru"
     sender_password = "Tjy5mH9sJDmgg2npf16U"
@@ -128,7 +128,6 @@ def setup():
     conn.close()
     save_server_stats()  # Сохранение данных перед каждым запросом
     # Получение актуальных значений из формы
-    print("аааа")
     check_thresholds(cpu_critical, temperature_critical, memory_critical)
 
 if __name__ == "__main__":
