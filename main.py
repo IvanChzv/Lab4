@@ -96,6 +96,7 @@ def send_email(subject, message):
         server.starttls()
         server.login(sender_email, sender_password)
         server.sendmail(sender_email, receiver_email, msg.as_string())
+    print("Отправлено письмо")
 def check_thresholds(cpu_load, cpu_temperature, memory_usage):
     # Здесь можно задать критические значения и отправлять уведомления при их превышении
     if cpu_load > 90:
